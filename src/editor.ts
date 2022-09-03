@@ -1,0 +1,79 @@
+import { createWorker } from './util'
+import * as monaco from 'monaco-editor'
+import { constrainedEditor } from 'constrained-editor-plugin'
+
+type Listener = (content: Record<string,string>) => void
+
+export function createEditor(
+  container: HTMLElement,
+  template: string,
+  workers: { ts: string | Worker; editor: string|Worker }
+) {
+  monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true)
+
+  self.MonacoEnvironment = {
+    async getWorker(_, label) {
+      if (label === 'typescript') {
+        return createWorker(workers.ts)
+      }
+      return createWorker(workers.editor)
+    },
+  }
+
+  const style = document.createElement('style')
+  style.innerHTML = `.transparent{
+    opacity: 0.5;
+}`
+  document.head.appendChild(style)
+
+  const lines = template.split('\n').concat(['\n'])
+  const editorInstance = monaco.editor.create(container, {
+    value: template + '\n',
+    language: 'typescript',
+    minimap: { enabled: false },
+  })
+  editorInstance.createDecorationsCollection([
+    {
+      range: new monaco.Range(1, 1, lines.length - 1, 1),
+      options: {
+        isWholeLine: true,
+        inlineClassName: 'transparent',
+      },
+    },
+  ])
+  const model = editorInstance.getModel()
+  const constrainedInstance = constrainedEditor(monaco)
+  constrainedInstance.initializeIn(editorInstance)
+  constrainedInstance.addRestrictionsTo(model, [
+    {
+      range: [lines.length, 1, lines.length, 1],
+      allowMultiline: true,
+      label: 'config',
+    },
+  ])
+
+  let listener: Listener = () => {}
+  const value = {}
+
+  ;(model as any)?.onDidChangeContentInEditableRange(function (
+    _: unknown,
+    allValues: Record<string, string>
+  ) {
+    Object.assign(value, allValues)
+    listener(allValues)
+  })
+
+  editorInstance.setPosition({ lineNumber: template.length, column: 1 })
+  editorInstance.focus()
+  return {
+    monacoEditorInstance: editorInstance,
+    dispose: () => {
+      editorInstance.dispose()
+      style.remove()
+    },
+    onChange: (fn: Listener) => {
+      listener = fn
+    },
+    value,
+  }
+}
