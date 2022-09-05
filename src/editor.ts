@@ -2,12 +2,12 @@ import { createWorker } from './util'
 import * as monaco from 'monaco-editor'
 import { constrainedEditor } from 'constrained-editor-plugin'
 
-type Listener = (content: Record<string,string>) => void
+type Listener = (content: Record<string, string>) => void
 
 export function createEditor(
   container: HTMLElement,
   template: string,
-  workers: { ts: string | Worker; editor: string|Worker }
+  workers: { ts: string | Worker; editor: string | Worker }
 ) {
   monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true)
 
@@ -41,6 +41,7 @@ export function createEditor(
       },
     },
   ])
+
   const model = editorInstance.getModel()
   const constrainedInstance = constrainedEditor(monaco)
   constrainedInstance.initializeIn(editorInstance)
@@ -63,8 +64,20 @@ export function createEditor(
     listener(allValues)
   })
 
+  async function validate() {
+    if (!model) return
+    const getWorker = await monaco.languages.typescript.getTypeScriptWorker()
+    const worker = await getWorker(model.uri)
+    const [sem, syn] = await Promise.all([
+      worker.getSemanticDiagnostics(model.uri.toString()),
+      worker.getSyntacticDiagnostics(model.uri.toString()),
+    ])
+    return sem.concat(syn)
+  }
+
   editorInstance.setPosition({ lineNumber: template.length, column: 1 })
   editorInstance.focus()
+
   return {
     monacoEditorInstance: editorInstance,
     dispose: () => {
@@ -74,6 +87,7 @@ export function createEditor(
     onChange: (fn: Listener) => {
       listener = fn
     },
+    validate,
     value,
   }
 }

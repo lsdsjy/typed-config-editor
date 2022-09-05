@@ -17,4 +17,7 @@ const editor = createEditor(document.getElementById('container')!, typeDef,{
   editor:editorWorkerUrl
 });
 
-editor.onChange(console.log)
+editor.onChange(async (content) => {
+  console.log(content)
+  document.getElementById('validity')!.innerHTML = (await editor.validate())?.length ? 'Error' : 'OK'
+})
