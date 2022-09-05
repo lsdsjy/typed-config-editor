@@ -1,5 +1,10 @@
 lockfileVersion: 5.4
 
+patchedDependencies:
+  constrained-editor-plugin@1.2.1:
+    hash: phvz64u54ti4efitywhasce5n4
+    path: patches/constrained-editor-plugin@1.2.1.patch
+
 specifiers:
   constrained-editor-plugin: ^1.2.1
   monaco-editor: ^0.34.0
@@ -7,7 +12,7 @@ specifiers:
   vite: ^3.0.9
 
 dependencies:
-  constrained-editor-plugin: 1.2.1
+  constrained-editor-plugin: 1.2.1_phvz64u54ti4efitywhasce5n4
   monaco-editor: registry.npmmirror.com/monaco-editor/0.34.0
 
 devDependencies:
@@ -25,9 +30,10 @@ packages:
     dev: true
     optional: true
 
-  /constrained-editor-plugin/1.2.1:
+  /constrained-editor-plugin/1.2.1_phvz64u54ti4efitywhasce5n4:
     resolution: {integrity: sha512-DHcqgar86hcVOqX80LmjNSiz22/nxxX2KE5n2HdlT+J6k72uPTRn7cgLy2JGqcRjxuKBIqYmuVbOHeBuxXnCdQ==}
     dev: false
+    patched: true
 
   /esbuild-android-64/0.14.54:
     resolution: {integrity: sha512-Tz2++Aqqz0rJ7kYBfz+iqyE3QMycD4vk7LBRyWaAVFgFtQ/O8EJOnVmTOiDWYZ/uYzB4kvP+bqejYdVKzE5lAQ==}
@@ -210,7 +216,7 @@ packages:
     optional: true
 
   /fsevents/2.3.2:
-    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
+    resolution: {integrity: sha1-ilJveLj99GI7cJ4Ll1xSwkwC/Ro=}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
     requiresBuild: true

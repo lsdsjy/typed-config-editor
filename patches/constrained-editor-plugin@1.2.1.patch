@@ -1,0 +1,13 @@
+diff --git a/dist/constrainedEditorPlugin.js b/dist/constrainedEditorPlugin.js
+index 08c7e2556b36fe649f71c7b5b61db48eef1d09b1..6210f3a69acb40daadb679c3d30936522ee37618 100644
+--- a/dist/constrainedEditorPlugin.js
++++ b/dist/constrainedEditorPlugin.js
+@@ -875,7 +875,7 @@ function constrainedEditor(monaco) {
+    */
+   const initInEditorInstance = function (editorInstance) {
+     if (isInstanceValid(editorInstance)) {
+-      const domNode = editorInstance.getDomNode();
++      let domNode = editorInstance.getDomNode();
+       manipulator._listener = listenerFn.bind(API, editorInstance);
+       manipulator._editorInstance = editorInstance;
+       manipulator._editorInstance._isInDevMode = false;

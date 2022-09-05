@@ -3,8 +3,9 @@
   "version": "0.0.1",
   "description": "Write config with types.",
   "main": "index.js",
+  "packageManager": "pnpm@7.10.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host=0.0.0.0",
     "build": "vite build"
   },
   "keywords": [],
@@ -17,5 +18,10 @@
   "devDependencies": {
     "typescript": "^4.8.2",
     "vite": "^3.0.9"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "constrained-editor-plugin@1.2.1": "patches/constrained-editor-plugin@1.2.1.patch"
+    }
   }
 }
