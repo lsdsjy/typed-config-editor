@@ -29,7 +29,7 @@ export function createEditor(
 }`
   document.head.appendChild(style)
 
-  const lines = template.split('\n').concat(['\n'])
+  const lines = template.split('\n').concat('\n')
   const editorInstance = monaco.editor.create(container, {
     model: monaco.editor.createModel(
       template + '\n',
@@ -81,7 +81,7 @@ export function createEditor(
     return sem.concat(syn)
   }
 
-  editorInstance.setPosition({ lineNumber: template.length, column: 1 })
+  editorInstance.setPosition({ lineNumber: lines.length, column: 1 })
   editorInstance.focus()
 
   return {
@@ -92,6 +92,13 @@ export function createEditor(
     },
     onChange: (fn: Listener) => {
       listener = fn
+    },
+    setValue: (val: string) => {
+      // @ts-ignore
+      editorInstance.getModel()?.updateValueInEditableRanges({
+        config: val,
+      })
+      editorInstance.setPosition({ lineNumber: lines.length, column: 1 })
     },
     validate,
     value,

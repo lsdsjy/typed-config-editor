@@ -21,3 +21,5 @@ editor.onChange(async (content) => {
   console.log(content)
   document.getElementById('validity')!.innerHTML = (await editor.validate())?.length ? 'Error' : 'OK'
 })
+
+editor.setValue('123')
