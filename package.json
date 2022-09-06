@@ -9,7 +9,9 @@
   "packageManager": "pnpm@7.10.0",
   "scripts": {
     "dev": "vite --host=0.0.0.0",
-    "build": "vite build"
+    "build": "vite build -c vite.demo-config.ts",
+    "build:lib": "vite build",
+    "prepublishOnly": "pnpm build:lib"
   },
   "keywords": [],
   "author": "lsdsjy",
