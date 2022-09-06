@@ -10,6 +10,9 @@ export function createEditor(
   workers: { ts: string | Worker; editor: string | Worker }
 ) {
   monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true)
+  monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+    noLib: true,
+  })
 
   self.MonacoEnvironment = {
     async getWorker(_, label) {
@@ -28,8 +31,11 @@ export function createEditor(
 
   const lines = template.split('\n').concat(['\n'])
   const editorInstance = monaco.editor.create(container, {
-    value: template + '\n',
-    language: 'typescript',
+    model: monaco.editor.createModel(
+      template + '\n',
+      'typescript',
+      monaco.Uri.parse('config.ts')
+    ),
     minimap: { enabled: false },
   })
   editorInstance.createDecorationsCollection([
