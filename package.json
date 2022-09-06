@@ -2,7 +2,10 @@
   "name": "typed-config-editor",
   "version": "0.0.1",
   "description": "Write config with types.",
-  "main": "index.js",
+  "type": "module",
+  "main": "dist/index.mjs",
+  "module": "dist/index.mjs",
+  "files": ["dist"],
   "packageManager": "pnpm@7.10.0",
   "scripts": {
     "dev": "vite --host=0.0.0.0",
