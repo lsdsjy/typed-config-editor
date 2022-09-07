@@ -11,7 +11,7 @@ export function createEditor(
 ) {
   monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true)
   monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-    noLib: true,
+    libs: ['ES5']
   })
 
   self.MonacoEnvironment = {
