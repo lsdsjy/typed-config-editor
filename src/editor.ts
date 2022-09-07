@@ -2,7 +2,9 @@ import { createWorker } from './util'
 import * as monaco from 'monaco-editor'
 import { constrainedEditor } from 'constrained-editor-plugin'
 
-type Listener = (content: Record<string, string>) => void
+type Listener = (content: string) => void
+
+const URI = monaco.Uri.parse('config.ts')
 
 export function createEditor(
   container: HTMLElement,
@@ -11,7 +13,7 @@ export function createEditor(
 ) {
   monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true)
   monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
-    libs: ['ES5']
+    libs: ['ES5'],
   })
 
   self.MonacoEnvironment = {
@@ -30,12 +32,16 @@ export function createEditor(
   document.head.appendChild(style)
 
   const lines = template.split('\n').concat('\n')
+  const model = (() => {
+    try {
+      return monaco.editor.createModel('', 'typescript', URI)
+    } catch {
+      return monaco.editor.getModel(URI)
+    }
+  })()
+  model?.setValue(template + '\n')
   const editorInstance = monaco.editor.create(container, {
-    model: monaco.editor.createModel(
-      template + '\n',
-      'typescript',
-      monaco.Uri.parse('config.ts')
-    ),
+    model,
     minimap: { enabled: false },
   })
   editorInstance.createDecorationsCollection([
@@ -48,7 +54,6 @@ export function createEditor(
     },
   ])
 
-  const model = editorInstance.getModel()
   const constrainedInstance = constrainedEditor(monaco)
   constrainedInstance.initializeIn(editorInstance)
   constrainedInstance.addRestrictionsTo(model, [
@@ -60,14 +65,14 @@ export function createEditor(
   ])
 
   let listener: Listener = () => {}
-  const value = {}
+  let value = ''
 
   ;(model as any)?.onDidChangeContentInEditableRange(function (
     _: unknown,
     allValues: Record<string, string>
   ) {
-    Object.assign(value, allValues)
-    listener(allValues)
+    value = allValues.config
+    listener(value)
   })
 
   async function validate() {
@@ -87,6 +92,7 @@ export function createEditor(
   return {
     monacoEditorInstance: editorInstance,
     dispose: () => {
+      constrainedInstance.disposeConstrainer()
       editorInstance.dispose()
       style.remove()
     },
@@ -98,9 +104,10 @@ export function createEditor(
       editorInstance.getModel()?.updateValueInEditableRanges({
         config: val,
       })
+      value = val
       editorInstance.setPosition({ lineNumber: lines.length, column: 1 })
     },
+    getValue: () => value,
     validate,
-    value,
   }
 }
